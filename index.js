@@ -1,7 +1,5 @@
 'use strict'
 
-const apm = require('elastic-apm-node')
-
 /**
  * Service metric traces to the Elastic APM.
  *
@@ -96,7 +94,7 @@ module.exports = {
    *
    */
   created () {
-    this.apm = apm.start(this.settings)
+    this.apm = require('elastic-apm-node').start(this.settings)
     this.requests = {}
     this.spans = {}
   }
