@@ -1,0 +1,13 @@
+{
+  "name": "moleculer-elastic-apm",
+  "version": "0.0.1",
+  "author": "Ivan Zhuravlev",
+  "homepage": "http://ivan.zhuravlev.name",
+  "keywords": ["elastic","apm","moleculer"],
+  "license": "MIT License",
+  "repository": "https://github.com/intech/moleculer-elastic-apm.git",
+  "scripts": {},
+  "dependencies": {
+    "elastic-apm-node": "~1.4.0"
+  }
+}
