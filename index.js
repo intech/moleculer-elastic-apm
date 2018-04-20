@@ -19,7 +19,8 @@ module.exports = {
     serviceName: 'Moleculer',
     serverUrl: 'http://localhost:8200',
     captureBody: 'all',
-    errorOnAbortedRequests: true
+    errorOnAbortedRequests: true,
+    tags: []
   },
 
   /**
@@ -34,8 +35,8 @@ module.exports = {
      */
     'metrics.trace.span.start' (payload) {
       this.requests[payload.id] = payload
-      this.spans[payload.id] = apm.startSpan(this.getSpanName(payload), 'broker')
-      if (!payload.parent) apm.startTransaction(this.getSpanName(payload), this.getType(payload))
+      this.spans[payload.id] = this.apm.startSpan(this.getSpanName(payload), 'broker')
+      if (!payload.parent) this.apm.startTransaction(this.getSpanName(payload), this.getType(payload))
     },
 
     /**
@@ -47,11 +48,13 @@ module.exports = {
       if (this.spans[payload.id]) {
         let item = this.requests[payload.id]
         Object.assign(item, payload)
-        if (item.meta.apiKey) apm.setTag('apiKey', item.meta.apiKey)
+        if (item.meta) {
+          this.settings.tags.map(field => this.apm.setTag(field, item.meta[field]))
+        }
         this.spans[payload.id].end()
       }
 
-      if (!payload.parent) apm.endTransaction()
+      if (!payload.parent) this.apm.endTransaction()
       delete this.requests[payload.id]
     }
   },
@@ -93,6 +96,7 @@ module.exports = {
    *
    */
   created () {
+    this.apm = apm.start(this.settings)
     this.requests = {}
     this.spans = {}
   }
