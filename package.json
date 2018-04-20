@@ -27,6 +27,7 @@
     "lint-commit": "./lint-commits.sh",
     "check": "standard && npm run test-deps && npm run lint-commit",
     "deps": "npm-check -u",
+    "coverage": "npm run check && nyc node index.js",
     "coverall": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test-deps": "dependency-check . -i async_hooks && dependency-check . --unused --no-dev --entry index.js"
   },

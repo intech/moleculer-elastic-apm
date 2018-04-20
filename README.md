@@ -29,6 +29,6 @@ $ npm install moleculer-elastic-apm
 [appveyor-image]: https://img.shields.io/appveyor/ci/intech/moleculer-elastic-apm/master.svg?label=windows
 [appveyor-url]: https://ci.appveyor.com/project/intech/moleculer-elastic-apm
 [coveralls-image]: https://img.shields.io/coveralls/intech/moleculer-elastic-apm/master.svg
-[coveralls-url]: https://coveralls.io/r/intech/moleculer-elastic-apm
+[coveralls-url]: https://coveralls.io/github/intech/moleculer-elastic-apm
 [downloads-image]: https://img.shields.io/npm/dm/moleculer-elastic-apm.svg
 [downloads-url]: https://npmjs.org/package/moleculer-elastic-apm
