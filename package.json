@@ -3,12 +3,50 @@
   "description": "Metrics to Elastic APM Agent",
   "version": "0.0.1",
   "author": "Ivan Zhuravlev",
-  "homepage": "http://ivan.zhuravlev.name",
-  "keywords": ["elastic","apm","moleculer"],
-  "license": "MIT License",
-  "repository": "https://github.com/intech/moleculer-elastic-apm.git",
-  "scripts": {},
+  "homepage": "https://github.com/intech/moleculer-elastic-apm",
+  "bugs": {
+    "url": "https://github.com/intech/moleculer-elastic-apm/issues"
+  },
+  "keywords": [
+    "elastic",
+    "apm",
+    "moleculer"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/intech/moleculer-elastic-apm.git"
+  },
+  "main": "index.js",
+  "engines": {
+    "node": "4 || 6 || 8 || 9"
+  },
+  "scripts": {
+    "lint": "standard",
+    "lint-fix": "standard --fix",
+    "lint-commit": "./lint-commits.sh",
+    "check": "standard && npm run test-deps && npm run lint-commit",
+    "deps": "npm-check -u",
+    "coverall": "cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "test-deps": "dependency-check . -i async_hooks && dependency-check . --unused --no-dev --entry index.js"
+  },
   "dependencies": {
     "elastic-apm-node": "~1.4.0"
+  },
+  "devDependencies": {
+    "coveralls": "~3.0.0",
+    "npm-check": "~5.7.0",
+    "@commitlint/cli": "~6.1.3",
+    "@commitlint/config-conventional": "~6.1.3",
+    "@commitlint/travis-cli": "~6.1.3",
+    "dependency-check": "~3.1.0",
+    "nyc": "~11.7.1",
+    "standard": "~11.0.1",
+    "test-all-versions": "~3.3.2"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }
