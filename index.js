@@ -96,7 +96,12 @@ module.exports = {
    *
    */
   created () {
-    this.apm = global[Symbol('ElasticAPMAgentInitialized')] ? APM : APM.start(this.settings)
+    // TODO: check already started
+    try {
+      this.apm = APM.start(this.settings)
+    } catch(e) {
+      this.apm = APM
+    }
     this.requests = {}
     this.spans = {}
   }
