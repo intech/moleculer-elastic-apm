@@ -35,9 +35,7 @@ module.exports = {
     'metrics.trace.span.start' (payload) {
       this.requests[payload.id] = payload
       this.spans[payload.id] = apm.startSpan(this.getSpanName(payload), 'broker')
-      if (!payload.parent) {
-        this.transactions[payload.id] = apm.startTransaction(this.getSpanName(payload), this.getType(payload))
-      }
+      if (!payload.parent) apm.startTransaction(this.getSpanName(payload), this.getType(payload))
     },
 
     /**
@@ -94,8 +92,7 @@ module.exports = {
    * Service created lifecycle event handler
    *
    */
-  created ()
-  {
+  created () {
     this.requests = {}
     this.spans = {}
   }
