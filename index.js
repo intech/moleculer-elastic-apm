@@ -1,5 +1,7 @@
 'use strict'
 
+const APM = require('elastic-apm-node')
+
 /**
  * Service metric traces to the Elastic APM.
  *
@@ -65,7 +67,7 @@ module.exports = {
     /**
      * Get span name from metric event. By default it returns the action name
      *
-     * @param {Object} span
+     * @param {Object} metric
      * @returns  {String}
      */
     getSpanName (metric) {
@@ -94,7 +96,7 @@ module.exports = {
    *
    */
   created () {
-    this.apm = require('elastic-apm-node').start(this.settings)
+    this.apm = global[Symbol('ElasticAPMAgentInitialized')] ? APM : APM.start(this.settings)
     this.requests = {}
     this.spans = {}
   }
