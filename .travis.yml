@@ -18,15 +18,15 @@ jobs:
         script: commitlint-travis
 
     # Coverage
-    -
-      script:
-        - npm run coverage
-        - ./node_modules/.bin/nyc report --reporter=lcov > coverage.lcov
-        - npm install -g codecov
-        - codecov
+    #-
+    #  script:
+    #    - npm run coverage
+    #    - ./node_modules/.bin/nyc report --reporter=lcov > coverage.lcov
+    #    - npm install -g codecov
+    #    - codecov
 
-after_success:
-  - npm run coverall
+#after_success:
+#  - npm run coverall
 
 notifications:
   email:

@@ -27,22 +27,29 @@ module.exports = {
    */
   events: {
 
+    /**
+     * Metric event start span
+     *
+     * @param {Object} payload
+     */
     'metrics.trace.span.start' (payload) {
       this.requests[payload.id] = payload
       this.spans[payload.id] = apm.startSpan(this.getSpanName(payload), 'broker')
-
-      // Если не вложенный запрос, создаём транзакцию
       if (!payload.parent) {
         this.transactions[payload.id] = apm.startTransaction(this.getSpanName(payload), this.getType(payload))
       }
     },
 
+    /**
+     * Metric event end span
+     *
+     * @param {Object} payload
+     */
     'metrics.trace.span.finish' (payload) {
-      // Закрываем span
       if (this.spans[payload.id]) {
         let item = this.requests[payload.id]
         Object.assign(item, payload)
-        if (item.meta.hasOwnProperty('apiKey')) apm.setTag('apiKey', item.meta.apiKey)
+        if (item.meta.apiKey) apm.setTag('apiKey', item.meta.apiKey)
         this.spans[payload.id].end()
       }
 
@@ -59,7 +66,7 @@ module.exports = {
     /**
      * Get span name from metric event. By default it returns the action name
      *
-     * @param {Object} metric
+     * @param {Object} span
      * @returns  {String}
      */
     getSpanName (metric) {
@@ -68,6 +75,12 @@ module.exports = {
       return 'unnamed'
     },
 
+    /**
+     * Get span type from metric event. By default 'request'
+     *
+     * @param {Object} span
+     * @returns  {String}
+     */
     getType (span) {
       let type = 'request'
       if (span.fromCache) type += '.cache'
@@ -79,8 +92,10 @@ module.exports = {
 
   /**
    * Service created lifecycle event handler
+   *
    */
-  created () {
+  created ()
+  {
     this.requests = {}
     this.spans = {}
   }
