@@ -1,7 +1,7 @@
 {
   "name": "moleculer-elastic-apm",
   "description": "Metrics to Elastic APM Agent",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "Ivan Zhuravlev",
   "homepage": "https://github.com/intech/moleculer-elastic-apm",
   "bugs": {
