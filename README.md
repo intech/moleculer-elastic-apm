@@ -24,7 +24,7 @@ $ npm install moleculer-elastic-apm
 
 [npm-image]: https://img.shields.io/npm/v/moleculer-elastic-apm.svg
 [npm-url]: https://npmjs.org/package/moleculer-elastic-apm
-[travis-image]: https://img.shields.io/travis/intech/moleculer-elastic-apm/master.svg?label=linux
+[travis-image]: https://img.shields.io/travis/intech/moleculer-elastic-apm/master.svg
 [travis-url]: https://travis-ci.org/intech/moleculer-elastic-apm
 [downloads-image]: https://img.shields.io/npm/dm/moleculer-elastic-apm.svg
 [downloads-url]: https://npmjs.org/package/moleculer-elastic-apm

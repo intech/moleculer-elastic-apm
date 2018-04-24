@@ -1,11 +1,8 @@
 .idea
 .travis.yml
-codecov.yml
 .npm
 .github
 docs
 script
 test
-.nyc_output
 build
-coverage

@@ -11,23 +11,6 @@ node_js:
 jobs:
   fast_finish: true
 
-  include:
-
-    # Commit Messages
-    -
-        script: commitlint-travis
-
-    # Coverage
-    #-
-    #  script:
-    #    - npm run coverage
-    #    - ./node_modules/.bin/nyc report --reporter=lcov > coverage.lcov
-    #    - npm install -g codecov
-    #    - codecov
-
-#after_success:
-#  - npm run coverall
-
 notifications:
   email:
     - ru31337@gmail.com
