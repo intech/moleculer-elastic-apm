@@ -19,8 +19,7 @@ module.exports = {
     serviceName: 'Moleculer',
     serverUrl: 'http://localhost:8200',
     captureBody: 'all',
-    errorOnAbortedRequests: true,
-    tags: []
+    errorOnAbortedRequests: true
   },
 
   /**
@@ -35,8 +34,12 @@ module.exports = {
      */
     'metrics.trace.span.start' (payload) {
       this.requests[payload.id] = payload
-      this.spans[payload.id] = this.apm.startSpan(this.getSpanName(payload), 'broker')
-      if (!payload.parent) this.apm.startTransaction(this.getSpanName(payload), this.getType(payload))
+      this.spans[payload.id] = this.apm.startSpan(this.getSpanName(payload), this.getSpanType(payload))
+      if (!payload.parent) {
+        this.apm.startTransaction(this.getSpanName(payload), this.getType(payload))
+        if(payload.meta) this.apm.setUserContext(payload.meta)
+        if(payload.params) this.apm.setCustomContext(payload.params)
+      }
     },
 
     /**
@@ -46,14 +49,9 @@ module.exports = {
      */
     'metrics.trace.span.finish' (payload) {
       if (this.spans[payload.id]) {
-        let item = this.requests[payload.id]
-        Object.assign(item, payload)
-        if (item.meta) {
-          this.settings.tags.map(field => this.apm.setTag(field, item.meta[field]))
-        }
         this.spans[payload.id].end()
+        delete this.spans[payload.id]
       }
-
       if (!payload.parent) this.apm.endTransaction()
       delete this.requests[payload.id]
     }
@@ -63,6 +61,20 @@ module.exports = {
    * Methods
    */
   methods: {
+
+    /**
+     * Get span type from metric event. By default it returns the action node path
+     *
+     * @param {Object} metric
+     * @returns  {String}
+     */
+    getSpanType (metric) {
+      let type = []
+      if(metric.hasOwnProperty('parentID')) type.push(metric.parentID)
+      if(metric.hasOwnProperty('callerNodeID')) type.push(metric.callerNodeID)
+      if(metric.hasOwnProperty('nodeID')) type.push(metric.nodeID)
+      return type.join('⇄')
+    },
 
     /**
      * Get span name from metric event. By default it returns the action name
@@ -82,11 +94,11 @@ module.exports = {
      * @param {Object} span
      * @returns  {String}
      */
-    getType (span) {
+    getType (metric) {
       let type = 'request'
-      if (span.fromCache) type += '.cache'
-      if (span.remoteCall) type += '.remote'
-      if (span.error) type = '.error'
+      if (metric.fromCache) type += '.cache'
+      if (metric.remoteCall) type += '.remote'
+      if (metric.error) type = '.error'
       return type
     }
   },
@@ -97,6 +109,7 @@ module.exports = {
    */
   created () {
     // TODO: check already started
+    // PR: https://github.com/elastic/apm-agent-nodejs/pull/311
     try {
       this.apm = APM.start(this.settings)
     } catch(e) {
