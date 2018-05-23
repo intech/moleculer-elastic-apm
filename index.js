@@ -35,10 +35,10 @@ module.exports = {
     'metrics.trace.span.start' (payload) {
       this.requests[payload.id] = payload
       this.spans[payload.id] = this.apm.startSpan(this.getSpanName(payload), this.getSpanType(payload))
+      if (payload.meta) this.apm.setUserContext(payload.meta)
+      if (payload.params) this.apm.setCustomContext(payload.params)
       if (!payload.parent) {
         this.apm.startTransaction(this.getSpanName(payload), this.getType(payload))
-        if(payload.meta) this.apm.setUserContext(payload.meta)
-        if(payload.params) this.apm.setCustomContext(payload.params)
       }
     },
 
@@ -48,6 +48,12 @@ module.exports = {
      * @param {Object} payload
      */
     'metrics.trace.span.finish' (payload) {
+      if(payload.error) {
+        let error = {};
+        if (payload.meta) error.user = payload.meta;
+        if (payload.params) error.user = payload.params;
+        this.apm.captureError(payload.error, error);
+      }
       if (this.spans[payload.id]) {
         this.spans[payload.id].end()
         delete this.spans[payload.id]
@@ -70,9 +76,9 @@ module.exports = {
      */
     getSpanType (metric) {
       let type = []
-      if(metric.hasOwnProperty('parentID')) type.push(metric.parentID)
-      if(metric.hasOwnProperty('callerNodeID')) type.push(metric.callerNodeID)
-      if(metric.hasOwnProperty('nodeID')) type.push(metric.nodeID)
+      if (metric.hasOwnProperty('parentID')) type.push(metric.parentID)
+      if (metric.hasOwnProperty('callerNodeID')) type.push(metric.callerNodeID)
+      if (metric.hasOwnProperty('nodeID')) type.push(metric.nodeID)
       return type.join('⇄')
     },
 
@@ -108,13 +114,7 @@ module.exports = {
    *
    */
   created () {
-    // TODO: check already started
-    // PR: https://github.com/elastic/apm-agent-nodejs/pull/311
-    try {
-      this.apm = APM.start(this.settings)
-    } catch(e) {
-      this.apm = APM
-    }
+    this.apm = APM.isStarted() ? APM : APM.start(this.settings)
     this.requests = {}
     this.spans = {}
   }
