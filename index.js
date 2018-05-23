@@ -48,12 +48,13 @@ module.exports = {
      * @param {Object} payload
      */
     'metrics.trace.span.finish' (payload) {
-      if(payload.error) {
+      // WTF!?
+      /*if(payload.error) {
         let error = {};
         if (payload.meta) error.user = payload.meta;
         if (payload.params) error.user = payload.params;
         this.apm.captureError(payload.error, error);
-      }
+      }*/
       if (this.spans[payload.id]) {
         this.spans[payload.id].end()
         delete this.spans[payload.id]
