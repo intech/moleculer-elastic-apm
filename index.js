@@ -23,7 +23,7 @@ module.exports = {
       // captureBody: 'all',
       // errorOnAbortedRequests: true,
       // captureExceptions: false,
-      serverUrl: 'http://localhost:8200',
+      serverUrl: 'http://localhost:8200'
     }
   },
 
@@ -36,7 +36,7 @@ module.exports = {
      *
      * @param {Object} metric
      */
-    'metrics.trace.span.finish' (metric) {
+    'metrics.trace.span.finish'(metric) {
       this.makePayload(metric)
     }
   },
@@ -50,7 +50,7 @@ module.exports = {
      *
      * @param {Object} metric
      */
-    makePayload (metric) {
+    makePayload(metric) {
       const serviceName = this.getServiceName(metric)
       const tracer = this.getTracer(serviceName)
 
@@ -65,17 +65,17 @@ module.exports = {
           null, // parentIdStr
           1, // flags
           {}, // baggage
-          '', // debugId
+          '' // debugId
         )
       }
-  
+
       const span = tracer.startSpan(this.getSpanName(metric), {
         startTime: metric.startTime,
         childOf: parentCtx,
         tags: {
           nodeID: metric.nodeID,
           level: metric.level,
-          remoteCall: metric.remoteCall,
+          remoteCall: metric.remoteCall
         }
       })
       this.addTags(span, 'service', serviceName)
@@ -86,7 +86,7 @@ module.exports = {
       this.addTags(
         span,
         opentracing.Tags.SPAN_KIND,
-        opentracing.Tags.SPAN_KIND_RPC_SERVER,
+        opentracing.Tags.SPAN_KIND_RPC_SERVER
       )
 
       const sc = span.context()
@@ -120,26 +120,26 @@ module.exports = {
           this.addTags(span, 'error.stack', metric.error.stack.toString())
         }
       }
-  
+
       span.finish(metric.endTime)
     },
-  
+
     /**
      * Get service name from metric event
      *
      * @param {Object} metric
      * @returns {String}
      */
-    getServiceName (metric) {
+    getServiceName(metric) {
       if (metric.service) {
         return metric.service.name ? metric.service.name : metric.service
       }
-    
+
       const parts = metric.action.name.split('.')
       parts.pop()
       return parts.join('.')
     },
-  
+
     /**
      * Add tags to span
      *
@@ -148,7 +148,7 @@ module.exports = {
      * @param {any} value
      * @param {String?} prefix
      */
-    addTags (span, key, value, prefix) {
+    addTags(span, key, value, prefix) {
       const name = prefix ? `${prefix}.${key}` : key
       if (typeof value === 'object') {
         Object.keys(value).forEach(k => this.addTags(span, k, value[k], name))
@@ -156,34 +156,34 @@ module.exports = {
         span.setTag(name, value)
       }
     },
-  
+
     /**
      * Convert Context ID to Zipkin format
      *
      * @param {String} id
      * @returns {String}
      */
-    convertID (id) {
+    convertID(id) {
       if (id) {
         return new Int64(id.replace(/-/g, '').substring(0, 16)).toBuffer()
       }
       return null
     },
-  
+
     /**
      * Get a tracer instance by service name
      *
      * @param {any} serviceName
      * @returns {Jaeger.Tracer}
      */
-    getTracer (serviceName) {
+    getTracer(serviceName) {
       if (this.tracers[serviceName]) return this.tracers[serviceName]
-    
+
       this.settings.apm.captureExceptions = false
       const agent = APM.isStarted() ? APM : APM.start(this.settings.apm)
       const tracer = new Tracer(agent)
       this.tracers[serviceName] = tracer
-    
+
       return tracer
     },
 
@@ -193,7 +193,7 @@ module.exports = {
      * @param {Object} metric
      * @returns  {String}
      */
-    getSpanType (metric) {
+    getSpanType(metric) {
       const type = []
       if (metric.hasOwnProperty('parentID')) type.push(metric.parentID)
       if (metric.hasOwnProperty('callerNodeID')) type.push(metric.callerNodeID)
@@ -207,7 +207,7 @@ module.exports = {
      * @param {Object} metric
      * @returns  {String}
      */
-    getSpanName (metric) {
+    getSpanName(metric) {
       if (metric.name) return metric.name
       if (metric.action) return metric.action.name
       return 'unnamed'
@@ -219,7 +219,7 @@ module.exports = {
      * @param {Object} span
      * @returns  {String}
      */
-    getType (metric) {
+    getType(metric) {
       let type = 'request'
       if (metric.fromCache) type += '.cache'
       if (metric.remoteCall) type += '.remote'
@@ -232,14 +232,14 @@ module.exports = {
    * Service created lifecycle event handler
    *
    */
-  created () {
+  created() {
     this.tracers = {}
   },
-  
+
   /**
    * Service stopped lifecycle event handler
    */
-  stopped () {
+  stopped() {
     // Object.keys(this.tracers).forEach(service => {
     //   this.tracers[service].close()
     // })
