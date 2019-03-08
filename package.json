@@ -1,7 +1,7 @@
 {
   "name": "moleculer-elastic-apm",
   "description": "Metrics to Elastic APM Agent",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "author": "Ivan Zhuravlev",
   "homepage": "https://github.com/intech/moleculer-elastic-apm",
   "bugs": {
@@ -29,11 +29,12 @@
     "test-deps": "dependency-check . -i async_hooks && dependency-check . --unused --no-dev --entry index.js"
   },
   "dependencies": {
-    "elastic-apm-node": "^1.5.4"
+    "elastic-apm-node-opentracing": "~1.1.0",
+    "node-int64": "~0.4.0"
   },
   "devDependencies": {
-    "dependency-check": "~3.1.0",
-    "npm-check": "^5.7.1",
-    "standard": "~11.0.1"
+    "dependency-check": "~3.3.0",
+    "npm-check": "~5.9.0",
+    "standard-esnext": "~5.3.0"
   }
 }

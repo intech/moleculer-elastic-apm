@@ -3,6 +3,5 @@ logs
 *.log*
 .npm
 .env
-package-lock.json
 build
 node_modules
