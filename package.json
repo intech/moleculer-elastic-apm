@@ -29,6 +29,7 @@
     "test-deps": "dependency-check . -i async_hooks && dependency-check . --unused --no-dev --entry index.js"
   },
   "dependencies": {
+    "elastic-apm-node": "~2.6.0",
     "elastic-apm-node-opentracing": "~1.1.0",
     "node-int64": "~0.4.0"
   },
