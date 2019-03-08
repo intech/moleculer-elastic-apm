@@ -24,7 +24,7 @@ module.exports = {
       // errorOnAbortedRequests: true,
       // captureExceptions: false,
       serverUrl: 'http://localhost:8200',
-    },
+    }
   },
 
   /**
@@ -34,10 +34,10 @@ module.exports = {
     /**
      * Metric event end span
      *
-     * @param {Object} payload
+     * @param {Object} metric
      */
-    'metrics.trace.span.finish' (payload) {
-      this.makePayload(payload)
+    'metrics.trace.span.finish' (metric) {
+      this.makePayload(metric)
     }
   },
 
@@ -53,7 +53,7 @@ module.exports = {
     makePayload (metric) {
       const serviceName = this.getServiceName(metric)
       const tracer = this.getTracer(serviceName)
-    
+
       let parentCtx
       if (metric.parent) {
         parentCtx = new SpanContext(
@@ -68,59 +68,59 @@ module.exports = {
           '', // debugId
         )
       }
-    
-      const span = this.tracer.startSpan(this.getSpanName(metric), {
+  
+      const span = tracer.startSpan(this.getSpanName(metric), {
         startTime: metric.startTime,
         childOf: parentCtx,
         tags: {
           nodeID: metric.nodeID,
           level: metric.level,
           remoteCall: metric.remoteCall,
-        },
+        }
       })
       this.addTags(span, 'service', serviceName)
       if (metric.action && metric.action.name) {
         this.addTags(span, 'action', metric.action.name)
       }
-    
+
       this.addTags(
         span,
         opentracing.Tags.SPAN_KIND,
         opentracing.Tags.SPAN_KIND_RPC_SERVER,
       )
-    
+
       const sc = span.context()
       sc.traceId = this.convertID(metric.requestID)
       sc.spanId = this.convertID(metric.id)
-    
+
       if (metric.callerNodeID) {
         this.addTags(span, 'callerNodeID', metric.callerNodeID)
       }
-    
+
       if (metric.params) {
         this.addTags(span, 'params', metric.params)
       }
-    
+
       if (metric.meta) {
         this.addTags(span, 'meta', metric.meta)
       }
-    
+
       if (metric.error) {
         // span.log({ event: 'error', 'error.object': metric.error, metric.error.message }, Date.now())
         this.addTags(span, opentracing.Tags.ERROR, true)
         this.addTags(span, 'error.message', metric.error.message)
         this.addTags(span, 'error.type', metric.error.type)
         this.addTags(span, 'error.code', metric.error.code)
-      
+
         if (metric.error.data) {
           this.addTags(span, 'error.data', metric.error.data)
         }
-      
+
         if (metric.error.stack) {
           this.addTags(span, 'error.stack', metric.error.stack.toString())
         }
       }
-    
+  
       span.finish(metric.endTime)
     },
   
